@@ -475,15 +475,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(args)
     train(args)
-
-    # # '利用SSE选择k'
-    # SSE = []  # 存放每次结果的误差平方和
-    # for i in range(1, 8): #尝试要聚成的类数
-    #     estimator = KMeans(n_clusters=i)  # 构造聚类器
-    #     estimator.fit(np.array(mdl[['0', '1', '2','3','4','5','6','7']]))
-    #     SSE.append(estimator.inertia_)
-    # X = range(1, 8) #跟k值要一样
-    # plt.xlabel('i')
-    # plt.ylabel('SSE')
-    # plt.plot(X, SSE, 'o-')
-    # plt.show() #画出图
