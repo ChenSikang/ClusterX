@@ -1,0 +1,170 @@
+CHEMBL205_lig186
+                    3D
+ Schrodinger Suite 2021-1.
+ 23 24  0  0  1  0            999 V2000
+   -3.0428    4.9373   11.2477 C   0  0  0  0  0  0
+   -1.8860    4.0559   12.3163 S   0  0  0  0  0  0
+   -4.0390    5.6922    9.2717 C   0  0  0  0  0  0
+   -4.8873    6.2464   10.2472 C   0  0  0  0  0  0
+   -4.3858    5.8400   11.8597 S   0  0  0  0  0  0
+   -3.0003    4.9544    9.8621 C   0  0  0  0  0  0
+   -6.2860    7.2869    9.9578 S   0  0  0  0  0  0
+   -0.6422    3.8636   11.5654 O   0  0  0  0  0  0
+   -1.9198    4.6855   13.6398 O   0  0  0  0  0  0
+   -4.2076    5.8557    7.7636 C   0  0  2  0  0  0
+   -2.6860    2.5154   12.4330 N   0  0  0  0  0  0
+   -6.4948    6.9766    8.1801 C   0  0  0  0  0  0
+   -5.1573    7.0229    7.4264 C   0  0  0  0  0  0
+   -4.6860    4.6400    7.2330 O   0  0  0  0  0  0
+   -2.2426    4.4398    9.2890 H   0  0  0  0  0  0
+   -3.2416    6.0366    7.2890 H   0  0  0  0  0  0
+   -2.3586    2.0410   13.2895 H   0  0  0  0  0  0
+   -2.4401    1.9280   11.6226 H   0  0  0  0  0  0
+   -7.1693    7.7476    7.8054 H   0  0  0  0  0  0
+   -7.0024    6.0203    8.0484 H   0  0  0  0  0  0
+   -5.3490    7.0398    6.3518 H   0  0  0  0  0  0
+   -4.6581    7.9679    7.6466 H   0  0  0  0  0  0
+   -5.5359    4.4560    7.6626 H   0  0  0  0  0  0
+  1  2  1  0  0  0
+  1  5  1  0  0  0
+  1  6  2  0  0  0
+  2  8  2  0  0  0
+  2  9  2  0  0  0
+  2 11  1  0  0  0
+  3  6  1  0  0  0
+  3 10  1  0  0  0
+  3  4  2  0  0  0
+  4  5  1  0  0  0
+  4  7  1  0  0  0
+  6 15  1  0  0  0
+  7 12  1  0  0  0
+ 10 13  1  0  0  0
+ 10 14  1  0  0  0
+ 10 16  1  0  0  0
+ 11 17  1  0  0  0
+ 11 18  1  0  0  0
+ 12 13  1  0  0  0
+ 12 19  1  0  0  0
+ 12 20  1  0  0  0
+ 13 21  1  0  0  0
+ 13 22  1  0  0  0
+ 14 23  1  0  0  0
+M  END
+> <s_m_entry_id>
+28885
+
+> <s_m_entry_name>
+dock_pv.2
+
+> <s_m_Source_Path>
+/home/csk/Desktop/cluster/DUD-E-result/cah2
+
+> <s_m_Source_File>
+dock_pv.maegz
+
+> <i_m_Source_File_Index>
+2
+
+> <chembl_id>
+CHEMBL158026
+
+> <chembl_pref_name>
+None
+
+> <i_lp_mmshare_version>
+53161
+
+> <i_f3d_flags>
+0
+
+> <r_lp_tautomer_probability>
+1
+
+> <s_lp_Force_Field>
+OPLS_2005
+
+> <r_lp_Energy>
+8.44565
+
+> <b_lp_Chiralities_Consistent>
+1
+
+> <s_lp_Variant>
+CHEMBL205_lig186-1
+
+> <s_i_glide_gridfile>
+glide-grid_1bcd
+
+> <i_i_glide_lignum>
+203
+
+> <i_i_glide_rotatable_bonds>
+2
+
+> <r_i_docking_score>
+-6.97999440921465
+
+> <r_i_glide_ligand_efficiency>
+-0.498571029229618
+
+> <r_i_glide_ligand_efficiency_sa>
+-1.20162710818259
+
+> <r_i_glide_ligand_efficiency_ln>
+-1.9180776165328
+
+> <r_i_glide_gscore>
+-6.97999440921465
+
+> <r_i_glide_lipo>
+-0.293583807420531
+
+> <r_i_glide_hbond>
+-1.28
+
+> <r_i_glide_metal>
+0
+
+> <r_i_glide_rewards>
+-1.87813015288054
+
+> <r_i_glide_evdw>
+-15.934591293335
+
+> <r_i_glide_ecoul>
+-17.5436725616455
+
+> <r_i_glide_erotb>
+0
+
+> <r_i_glide_esite>
+-0.1
+
+> <r_i_glide_emodel>
+-46.8670058237792
+
+> <r_i_glide_energy>
+-33.4782638549805
+
+> <r_i_glide_einternal>
+1.14445984363556
+
+> <i_i_glide_confnum>
+1
+
+> <i_i_glide_posenum>
+333
+
+> <r_i_glide_eff_state_penalty>
+0
+
+> <s_m_subgroup_title>
+dock_pv
+
+> <s_m_subgroupid>
+dock_pv
+
+> <b_m_subgroup_collapsed>
+0
+
+$$$$
