@@ -511,35 +511,6 @@ if __name__ == '__main__':
     parser.add_argument('--min_cluster', type=int, default=1)
 
     args = parser.parse_args()
-    # print(args)
-    # train(args)
-    
-    config = {
-        # 'f_bond': tune.sample_from(lambda _: np.random.randint(70, 120)),
-        # 'f_gather': tune.sample_from(lambda _: np.random.randint(80, 129)),
-        # 'f_spatial': tune.sample_from(lambda _: np.random.randint(80, 129)),
-        # 'n_bond_conv_steps': tune.sample_from(lambda _: np.random.randint(1, 3)),
-        # 'n_spatial_conv_steps': tune.sample_from(lambda _: np.random.randint(1, 2)),
-        # 'max_num_neighbors': tune.sample_from(lambda _: np.random.randint(3, 13)),
-        # 'weight_decay': tune.choice([1e-7, 1e-5]),
-        # 'dropouts': tune.choice([[0,0,0], [0.25,0.25,0.25],[0.4,0.4,0.4]]),
-        # 'batch_size': tune.choice([8,16,24,48,96,128,256]),
-        # "num_classes": tune.sample_from(lambda _: np.random.randint(2, 30)),
-        "lr": tune.choice([0.6, 0.4, 0.2, 0.1, 0.01, 0.001, 0.001, 0.0001, 0.00001]),
-        'args': args
-        }
-    
-    result = tune.run(
-        train,
-        resources_per_trial={"gpu": 1, },
-        config=config,
-        num_samples=100,  # 迭代的次数
-    )
+    print(args)
+    train(args)
 
-    # 得到最后的结果
-    print("======================== Result =========================")
-    print(result.results_df)
-    
-
-    # max_k = 951
-    # initial_num_classes(args, max_k)
