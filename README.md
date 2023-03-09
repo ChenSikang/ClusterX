@@ -14,13 +14,13 @@ git clone https://github.com/ChenSikang/ClusterX.git
 ```
 
 ### 1. graph construct
-Before running, please make sure that the dataset exists in the current path.
+The training data (ClusterX dataset) needs to be constructed through ***Featurizer.py***, and the molecular graph is output as a numpy file. The same steps are used for the data to be clusteredBefore running, please make sure that the dataset exists in the data_dir path. 
 ```
-python Featurizer.py
+python Featurizer.py --data_dir 'your_data_path'
 ```
 
 ### 2. pre-training
-We provide the pre-trained network parameters (pretrain_ClusterX.pkl)，if you want to retrain a pre-trained model
+We provide the pre-trained network parameters (pretrain_ClusterX.pkl), you can also use ClusterX dataset or your own training set to retrain a pre-trained model
 ```
 python pretrain.py --data_dir 'your_train_data_path'
 ```
@@ -30,12 +30,15 @@ After training, the clustering information will be output
 ```
 python train.py --data_dir 'your_clustering_analysis_data_path' --pretrain_path 'your_pretrain_model_path'
 ```
-Running following command will use model to predict the ***example.npy*** protein-ligand complex file in KLIFS database.
+Running following command will use model to predict the ***example_klifs_data.npy*** protein-ligand complex file in KLIFS database.
 
 Before running, please make sure that the model file exists in the current path.
 ```
-python train.py --data_dir './example.npy' --pretrain_path './pretrain_ClusterX.pkl'
+python train.py --data_dir './example_klifs_data.npy' --pretrain_path './pretrain_ClusterX.pkl'
 ```
+
+### 4.visual inspection
+ClusterX does not have the function of visualizing the binding conformation of the protein-ligand complex. You can import the initial protein-ligand complex file into ***Schrödinger***, ***discovery studio***，***MOE*** and other visualization software combined with the clustering information provided by ClusterX for visual inspection.
 
 ## Citation
 If you use ClusterX in your work, please cite the following paper:
