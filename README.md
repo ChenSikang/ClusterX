@@ -34,6 +34,7 @@ Running following command will use model to predict the ***example_klifs_data.np
 
 Before running, please make sure that the model file exists in the current path.
 ```
+unzip ./example_klifs_data.zip
 python train.py --data_dir './example_klifs_data.npy' --pretrain_path './pretrain_ClusterX.pkl'
 ```
 
