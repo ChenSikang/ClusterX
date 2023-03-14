@@ -72,8 +72,6 @@ def split_features(features, batch_num_nodes):
     for i in range(1, len(node_nums)):  # the rest of ligands in the batch
         ligand_idx.append(list(range(node_nums[i-1], node_nums[i])))
 
-    # print('features.size()', features.size())
-    # print('ligand_idx', ligand_idx)
     return [[features[i, ].numpy().tolist()] for i in ligand_idx]
 
 
@@ -107,11 +105,7 @@ def nondist_forward_collect_v0(func, data_loader, length):
             my_len.append(len(feature[0]))
             results.append(feature)
 
-    # print('最后一个feature形状', np.array(feature).shape)
-    # print('results形状', len(results), np.array(results[0]).shape)
-
     max_num = max(my_len)
-    # print('max_num', max_num)
     new_results = []
     zerolist = [0]*config['args'].n_rows_fc[-1]
     for result in results:
@@ -119,7 +113,6 @@ def nondist_forward_collect_v0(func, data_loader, length):
             for j in range(max_num - len(result[0])):
                 result[0].append(zerolist)
         new_results.append(dict(feature=result))
-    # print('补零后results维度', len(results), np.array(results[0]).shape)
 
     results_all = {}
     for k in new_results[0].keys():
@@ -231,9 +224,6 @@ class DeepClusterHook():
 
 
 def train(config):
-    # only for init
-    # if config['f_spatial'] < config['f_gather']:
-    #     config['f_spatial']=config['f_gather']
 
     iteration = 0
     train_dataloader = DataLoader(dataset=DockingDataset(data_file=config['args'].data_dir),
@@ -308,10 +298,7 @@ def train(config):
             losses.append(loss['loss'].cpu().detach().numpy())
             cls_loss.append(loss['cls_loss'])
             rec_loss.append(loss['rec_loss'])
-            # tqdm.write('loss {}, cls_loss {}, rec_loss {}'.
-            #            format(loss['loss'], loss['cls_loss'], loss['rec_loss']))
-            # tqdm.write('cluster changing ratio: {}, ACC: {}'.
-            #            format(loss['change_ratio'], loss['acc']))
+
             loss['loss'].backward()
             iteration += 1
             if iteration % config['args'].centroids_update_interval == 0:
@@ -379,13 +366,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='train model')
 
     # parser.add_argument('--data_dir', type=str,
-    #                     default='/home/sikang/cluster-AE/dataset/output/pn_data.npy')
+    #                     default='')
     parser.add_argument('--data_dir', type=str,
-                        default='/home/sikang/cluster-AE/dataset/output/pn_testset_notume.npy')
+                        default='')
     parser.add_argument('--pretrain_path', type=str,
-                        default='/home/sikang/cluster-AE/odc-pnet/pretrain/pretrain_trial0_epoch1999.pkl')
+                        default='')
     parser.add_argument('--work_dir', type=str,
-                        default='/home/sikang/cluster-AE/odc-pnet/work_dir')
+                        default='./work_dir')
     parser.add_argument('--checkpoint', type=bool, default=True)
     parser.add_argument('--checkpoint_iter', type=int, default=10000)
     parser.add_argument('--checkpoint_dir', type=str, default='./saveMod')
