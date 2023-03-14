@@ -51,31 +51,13 @@ def run_a_train_epoch(args, epoch, model, data_loader,
     for i, batch in enumerate(data_loader):
         lg, bg1, bg2, idx, labels = batch
 
-        # print('配体图邻接矩阵', lg.adjacency_matrix().to_dense())
-        # print('配体图邻接矩阵形状', lg.adjacency_matrix().to_dense().size())
-        # print('复合物图邻接矩阵', bg1.adjacency_matrix().to_dense())
-        # print('复合物图邻接矩阵形状', bg1.adjacency_matrix().to_dense().size())
-        # print('knn图邻接矩阵', bg2.adjacency_matrix().to_dense())
-        # print('knn图邻接矩阵形状', bg2.adjacency_matrix().to_dense().size())
-
         adj_label = lg.adjacency_matrix().to_dense().to(device)
         bigraph_canonical = bg1.to(device)
         knn_graph = bg2.to(device)
-        # print(type(labels), labels)
         labels = labels.to(device)
-        # labels = label2onehot(labels).to(device)
 
         prediction, A_pred, z = model(bigraph_canonical, knn_graph)
-
-        # print('重构矩阵', A_pred)
-        # print('重构矩阵大小', A_pred.size())
-
-        # cls_loss = loss_criterion(
-        #     prediction, (labels - train_mean) / train_std)
-        # print('prediction维度', prediction.size())
-        # print('prediction', prediction)
-        # print('label维度', labels.long().squeeze().size())
-        # print('label维度', labels.long().squeeze())
+        
         cls_loss = loss_criterion(prediction, labels.squeeze().long())
 
         rec_loss = F.binary_cross_entropy(A_pred.view(-1), adj_label.view(-1))
@@ -86,7 +68,7 @@ def run_a_train_epoch(args, epoch, model, data_loader,
         losses.append(float(loss))
         y_pred.append(prediction)
         y_target.append(labels.squeeze().long())
-        # print(f'loss:{loss}, cls_loss{cls_loss}, rec_loss{rec_loss}')
+
         epoch_loss += loss.data.item() * len(idx)
         print(
             f'loss:{loss}, cls_loss{cls_loss}, rec_loss{rec_loss}')
@@ -119,14 +101,11 @@ def run_an_eval_epoch(args, model, data_loader):
         for i, batch in enumerate(data_loader):
             lg, bg1, bg2, idx, labels = batch
             labels = labels.to(device)
-            # labels = label2onehot(labels).to(device)
             bigraph_canonical = bg1.to(device)
             knn_graph = bg2.to(device)
 
             prediction, A_pred, z = model(bigraph_canonical, knn_graph)
 
-            # print('prediction维度', prediction.size())
-            # print('label维度', labels.long().squeeze().size())
             y_pred.append(prediction)
             y_target.append(labels.squeeze().long())
 
@@ -143,10 +122,6 @@ def train(args):
     # datasets = pickle.load(open(args.data_dir, 'rb')).item()
     datasets = np.load(args.data_dir, allow_pickle=True).item()
     train_set, val_set, test_set = split_datasets(datasets, train_ratio=0.6)
-
-    # train_mean, train_std = data_preprocessing(train_set)
-    # train_mean = train_mean.to(device)
-    # train_std = train_std.to(device)
 
     iteration = 0
     train_dataloader = DataLoader(DockingDataset_labeled(data_file=train_set),
@@ -239,26 +214,6 @@ def train(args):
         trial_val_acc[trial] = val_acc[best_epoch]
         trial_test_acc[trial] = test_acc[best_epoch]
         print('Best test epoch: ', best_epoch + 1)
-
-        # 画loss曲线
-        fig = plt.figure(1)
-        plt.plot(losses, label='loss')
-        plt.plot(cls_losses, label='cls_loss')
-        plt.plot(rec_losses, label='rec_loss')
-        plt.title('pretrain model loss')
-        plt.ylabel('loss')
-        plt.xlabel('epoch')
-        plt.legend(['loss', 'cls_loss', 'rec_loss'], loc='upper right')
-        plt.savefig('./result/pretrain-loss.png')
-
-    print(f'\n Finished {args.trials} trials.')
-    print('Best train acc mean: ', trial_train_acc.mean(),
-          ', standard deviation: ', trial_train_acc.std())
-    print('Best validation acc mean: ', trial_val_acc.mean(),
-          ', standard deviation: ', trial_val_acc.std())
-    print('Best test acc mean: ', trial_test_acc.mean(),
-          ', standard deviation: ', trial_test_acc.std())
-
 
 def checkpoint_model(model, epoch, step, output_path):
     if not os.path.exists(os.path.dirname(output_path)):
