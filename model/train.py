@@ -294,7 +294,7 @@ def train(config):
         dc_hook.deepcluster(model)
 
     losses, cls_loss, rec_loss = [], [], []
-    NMI, ARI, SC, CHI = np.zeros(config['args'].epochs), np.zeros(config['args'].epochs), np.zeros(config['args'].epochs), np.zeros(config['args'].epochs)
+    NMI = np.zeros(config['args'].epochs)
     for epoch in range(config['args'].epochs):
         losses = []
         for batch in tqdm(train_dataloader):
@@ -336,115 +336,23 @@ def train(config):
                 "{}/cluster_epoch_{}.npy".format(config['args'].work_dir, epoch),
                 new_labels.numpy())
 
-        feature = model.memory_bank.feature_bank.cpu().detach()
         y_target = model.memory_bank.label_bank.cpu().detach()
         if epoch>0:
             p_labels = np.load("{}/cluster_epoch_{}.npy".format(config['args'].work_dir, epoch-1))
         else:
             p_labels = np.load("{}/cluster_epoch_{}.npy".format(config['args'].work_dir, epoch))
         NMI[epoch] = metrics.adjusted_mutual_info_score(p_labels, y_target)
-        ARI[epoch] = metrics.adjusted_rand_score(p_labels, y_target)
-        SC[epoch] = metrics.silhouette_score(feature, y_target)
-        CHI[epoch] = metrics.calinski_harabasz_score(feature, y_target)
-        # tqdm.write('epoch {}/{}, NMI: {}, ARI: {}, SC {}, CHI {}'.
-        #            format(epoch+1, config['args'].epochs, NMI[epoch], CHI[epoch], SC[epoch], CHI[epoch]))
-
-    # 画loss曲线
-    fig = plt.figure()
-    plt.xlabel('k')
-    plt.plot(NMI, label='CHI', color='green')
-    plt.plot(ARI, label='ARI', color='red')
-    plt.plot(SC, label='SC', color='blue')
-    plt.title('performance evaluation')
-    plt.ylabel('value')
-    plt.legend(['NMI', 'ARI', 'SC'], loc='upper right')
-    plt.savefig('./result/performance_evaluation_notume.png')
-
-    # save results on the epoch with best validation acc
-    best_epoch = np.argmax(SC)
-    print('Best test epoch: ', best_epoch)
-    print(f'Best SC: {SC[best_epoch]}, Best CHI: {CHI[best_epoch]}')
+        tqdm.write('epoch {}/{}, NMI: {}'.
+                   format(epoch+1, config['args'].epochs, NMI[epoch]))
 
     checkpoint_dict = {'stage1': model.stage_1_model.state_dict(
     ), 'stage2': model.stage_2_model.state_dict(), 'neck': model.neck.state_dict()}
     torch.save(
         checkpoint_dict, f"/home/sikang/cluster-AE/odc-pnet/train/train_epoch{epoch}.pkl")
-
-
-def initial_num_classes(args, num_classes):
-    iteration = 0
-    train_dataloader = DataLoader(dataset=DockingDataset(data_file=config['args'].data_dir),
-                                  batch_size=config['args'].batch_size,
-                                  collate_fn=collate,
-                                  shuffle=True,
-                                  drop_last=True,
-                                  pin_memory=True,
-                                  )
-    print(f'total sample: {len(train_dataloader.dataset.ligands)}')
-
-    model = ODC(pretrain_path=config['args'].pretrain_path,
-                total_samples=len(train_dataloader.dataset),
-                num_classes=config['args'].num_classes,
-                min_cluster=config['args'].min_cluster,
-                n_etypes=len(config['args'].distance_bins)+5,
-                f_in=config['args'].f_in,
-                f_bond=config['f_bond'],
-                f_spatial=config['f_spatial'],
-                f_gather=config['f_gather'],
-                n_rows_fc=config['n_rows_fc'],
-                n_bond_conv_steps=config['n_bond_conv_steps'],
-                n_spatial_conv_steps=config['n_spatial_conv_steps'],
-                dropouts=config['args'].dropouts,
-                momentum=0.5)
-
-    extractor = Extractor(batch_size=config['args'].batch_size,
-                          dataset=DockingDataset(data_file=config['args'].data_dir))
-
-    model.eval()
-    model.to(device)
-    features = extractor(model)
-    # print('features.size',features.size())
-    # print('features',features)
-
-    SC, CHI = np.zeros(num_classes), np.zeros(num_classes)
-    for num_class in range(2, num_classes):
-        clustering_algo = _clustering.__dict__['Kmeans'](
-            k=num_class, pca_dim=12)
-        # Features are normalized during clustering
-        clustering_algo.cluster(features, verbose=True)
-        assert isinstance(clustering_algo.labels, np.ndarray)
-        labels = clustering_algo.labels.astype(np.int64)
-        # print('labels type', type(labels))
-        # print('labels', labels)
-        SC[num_class] = metrics.silhouette_score(features, labels)
-        CHI[num_class] = metrics.calinski_harabasz_score(features, labels)
-        tqdm.write('k:{}, SC {}, CHI {}'.
-                   format(num_class, SC[num_class], CHI[num_class]))
-        # odc_evaluate(labels, num_classes)
-
-    best_k = np.argmax(SC)
-    print('Best k: ', best_k)
-    print(f'Best SC: {SC[best_k]}, Best CHI: {CHI[best_k]}')
-
-    sc = [SC[i] for i in range(num_classes)]
-    chi = [CHI[i] for i in range(num_classes)]
-    # 画loss曲线
-    fig = plt.figure()
-    plt.xticks(range(0,num_classes,100))
-    plt.xlabel('k')
-    ax1=fig.add_subplot()
-    ax1.set_ylabel('SC')
-    ax1.plot(sc, label='SC', color='blue')
-    plt.legend('SC',loc='upper right')
-    ax2=ax1.twinx()
-    ax2.set_ylabel('CHI')
-    ax2.plot(chi, label='CHI', color='green')
-    plt.legend('CHI',loc='upper right')
-    plt.title('The effect of the initial k value')
-    # plt.ylabel('value')
-    # plt.legend(['SC', 'CHI'], loc='upper right')
-    plt.savefig('./result/train-initial_k_notum.png')
-
+    
+    clusters = np.load("{}/cluster_epoch_{}.npy".format(config['args'].work_dir, epoch))
+    
+    return clusters
 
 def checkpoint_model(model, epoch, step, output_path):
     if not os.path.exists(os.path.dirname(output_path)):
