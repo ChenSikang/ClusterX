@@ -38,23 +38,12 @@ class PotentialNet(nn.Module):
 
     def forward(self, bigraph, knn_graph):
         batch_num_nodes = bigraph.batch_num_nodes()
-        # print("batch_num_nodes", batch_num_nodes)
         h = self.stage_1_model(graph=bigraph, feat=bigraph.ndata['h'])
-        # print('stage1 output', h)
-        # print('stage1 output size', h.size())
         h = self.stage_2_model(graph=knn_graph, feat=h)
-        # print('stage2 output', h)
-        # print('stage2 output size', h.size())
         x = self.stage_3_model(batch_num_nodes=batch_num_nodes, features=h)
-        # print('x', x)
-        # print('x.size()', x.size())  # torch.Size([200, 97])
-
         z = ligand_gather(h, batch_num_nodes=batch_num_nodes)
-        # print('gather output', h)
-        # print('gather output size', h.size())
         z = F.normalize(z, p=2, dim=1)
-        # print('final output', z)
-        # print('final output size', z.size())
+
         A_pred = self.dot_product_decoder(z)
 
         return x, A_pred, h
@@ -73,7 +62,6 @@ def sum_ligand_features(h, batch_num_nodes):
     ligand_idx = [list(range(node_nums[0]))]  # first ligand
     for i in range(2, len(node_nums), 2):  # the rest of ligands in the batch
         ligand_idx.append(list(range(node_nums[i-1], node_nums[i])))
-    # print('ligand_idx', ligand_idx)
     # sum over each ligand
     return torch.cat([h[i, ].sum(0, keepdim=True) for i in ligand_idx]).to(device=h.device)
 
@@ -87,7 +75,6 @@ def ligand_gather(h, batch_num_nodes):
     ligand_idx = [list(range(node_nums[0]))]  # first ligand
     for i in range(2, len(node_nums), 2):  # the rest of ligands in the batch
         ligand_idx.append(list(range(node_nums[i-1], node_nums[i])))
-    # print('ligand_idx', ligand_idx)
     # sum over each ligand
     return torch.cat([h[i, ] for i in ligand_idx]).to(device=h.device)
 
