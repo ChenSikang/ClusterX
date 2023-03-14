@@ -129,16 +129,6 @@ class ODC(nn.Module):
             loss_inputs = (feature[0], outs,
                            self.memory_bank.label_bank[idx].cuda())
 
-        # print('标签idx', idx)
-        # print('backbone输出维度', x.size())
-        # print('backbone输出', x)
-        # print('neck输出维度', feature[0].size())
-        # print('neck输出', feature[0])
-        # print('head输出维度', outs[0].size())
-        # print('head输出', outs[0])
-        # print('标签维度', self.memory_bank.label_bank[idx].size())
-        # print('标签', self.memory_bank.label_bank[idx])
-
         losses = self.head.loss(*loss_inputs)
         losses["rec_loss"] = F.binary_cross_entropy(
             A_pred.view(-1), adj_label.view(-1))
@@ -266,11 +256,7 @@ class ClsHead(nn.Module):
     def loss(self, x, cls_score, labels):
         losses = dict()
         assert isinstance(cls_score, (tuple, list)) and len(cls_score) == 1
-        # print('cls_score形状', cls_score[0].size())
-        # print('labels形状', labels.size())
         losses['cls_loss'] = self.criterion(cls_score[0], labels)
-        # losses['acc'], losses['NMI'], losses['ARI'], losses['SC'], losses['CHI'] = clustering_performance_evaluation(
-        #     x, cls_score[0], labels)
         y_preds = [i.index(max(i)) for i in cls_score[0].tolist()]
         y_trues = [i for i in labels.tolist()]
         losses['acc'] = metrics.accuracy_score(y_trues, y_preds)
