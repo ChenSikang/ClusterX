@@ -253,8 +253,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='train model')
 
-    parser.add_argument('--data_dir', type=str,
-                        default='/home/sikang/cluster-AE/dataset/output/klifs_data.npy')
+    parser.add_argument('--data_dir', type=str, default='')
     parser.add_argument('--work_dir', type=str, default='./work_dir')
     parser.add_argument('--checkpoint', type=bool, default=True)
     parser.add_argument('--checkpoint_iter', type=int, default=10000)
