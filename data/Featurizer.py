@@ -424,7 +424,6 @@ def construct_PN_graph():
     labels = []
     for target in targets:
         labels.append(target)
-    print(f'共{len(labels)}个靶点:{labels}')
     final_output = dict()
     failure_dict = {"target": [], "error_num": []}
     weight = dict()
@@ -436,11 +435,11 @@ def construct_PN_graph():
         print(target)
 
         try:
-            docking_pocket_file = './cluster_dataset_docking-poses/{}/protein_cut.pdb'.format(
+            docking_pocket_file = '../ClusterX_dataset/{}/protein_cut.pdb'.format(
                 target)
             pose_pocket = Chem.MolFromPDBFile(docking_pocket_file)
 
-            ligand_pose_file = './cluster_dataset_docking-poses/{}/ligand_docking_pose.sdf'.format(
+            ligand_pose_file = '../ClusterX_dataset/{}/ligand_docking_pose.sdf'.format(
                 target)
             pose_ligands = Chem.SDMolSupplier(ligand_pose_file)
             # ligand = Chem.MolFromMolFile(ligand_file)
@@ -457,7 +456,6 @@ def construct_PN_graph():
                     nums += 1
                 except:
                     error_num += 1
-                    print(f'{target}有{error_num}个配体构建失败')
                     failure_dict["target"].append(
                         target), failure_dict["error_num"].append(error_num)
                     continue
@@ -474,52 +472,5 @@ def construct_PN_graph():
     failure_df = pd.DataFrame(failure_dict)
     failure_df.to_csv('./failure.csv', index=False)
 
-def construct_PN_graph_test(target, distance=5):
-    final_output = dict()
-    failure_dict = {"target": [], "error_num": []}
-    IDs = list(pd.read_csv(f'/home/sikang/cluster-AE/dataset/test_set/{target}/activity.csv')['ChemDiv Reference'])
-    scores = list(pd.read_csv(f'/home/sikang/cluster-AE/dataset/test_set/{target}/activity.csv')['Docking Score'])
-
-    print(target)
-    error_num = 0
-    pdb_file = '/home/sikang/cluster-AE/dataset/test_set/{}/{}.pdb'.format(
-        target,target)
-    structure = parsePDB(pdb_file)
-    protein = structure.select('protein')
-
-    ligand_pose_file = '/home/sikang/cluster-AE/dataset/test_set/{}/ligand_docking_pose.sdf'.format(
-        target)
-    pose_ligands = Chem.SDMolSupplier(ligand_pose_file)
-    # ligand = Chem.MolFromMolFile(ligand_file)
-
-    lig_idx = 0
-    for pose_ligand in tqdm(pose_ligands):
-        ID = pose_ligand.GetProp('IDNUMBER')
-        index = IDs.index(ID)
-        docking_score = scores[index]
-        selected = protein.select(f'same residue as within {distance} of ligand', ligand=pose_ligand.GetConformer().GetPositions())
-        writePDB('/home/sikang/cluster-AE/dataset/test_set/{}/pro_cut/{}_{}.pdb'.format(target,target,ID), selected)
-        pose_pocket = Chem.MolFromPDBFile('/home/sikang/cluster-AE/dataset/test_set/{}/pro_cut/{}_{}.pdb'.format(target,target,ID), sanitize=True)
-
-        if pose_pocket:
-            ligand_bigraph, complex_bigraph, complex_knn_graph = PN_graph_construction_and_featurization(
-                pose_ligand, pose_pocket)
-            lig_idx += 1
-            final_output[(target, lig_idx)] = dict(
-                ligand_bigraph=ligand_bigraph, complex_graph=complex_bigraph, complex_knn_graph=complex_knn_graph, ligand_id = ID, docking_score=docking_score)
-
-        else:
-            print(f'pocket file read error for {target}-{ID}')
-        # error_num += 1
-        # print(f'{target}有{error_num}个配体构建失败')
-        # failure_dict["target"].append(
-        #     target), failure_dict["error_num"].append(error_num)
-
-    np.save(f'./output/pn_testset_{target}.npy', final_output)
-
-    failure_df = pd.DataFrame(failure_dict)
-    failure_df.to_csv(f'./failure_{target}.csv', index=False)
-
 if __name__ == '__main__':
-    # construct_IGN_graph()
-    construct_PN_graph_test('notume')
+    construct_PN_graph()
